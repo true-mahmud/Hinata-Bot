@@ -8,28 +8,22 @@ const baseApiUrl = async () => {
 module.exports = {
         config: {
                 name: "ai",
-                version: "1.7",
+                version: "3.7",
                 author: "MahMUD",
                 countDown: 5,
                 role: 0,
                 description: {
-                        bn: "যেকোনো বিষয়ে এআই সহকারীর সাথে চ্যাট করুন",
                         en: "Chat with an AI assistant on any topic",
                         vi: "Trò chuyện với trợ lý AI về bất kỳ chủ đề nào"
                 },
                 category: "ai",
                 guide: {
-                        bn: '   {pn} <প্রশ্ন>: আপনার প্রশ্নটি লিখুন',
                         en: '   {pn} <question>: Type your question',
                         vi: '   {pn} <câu hỏi>: Nhập câu hỏi của bạn'
                 }
         },
 
         langs: {
-                bn: {
-                        noInput: "× বেবি, কিছু তো জিজ্ঞাসা করো!",
-                        error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact MahMUD|\n•WhatsApp: 01836298139"
-                },
                 en: {
                         noInput: "× Baby, please ask something!",
                         error: "× API error: %1. Contact MahMUD for help.\n•WhatsApp: 01836298139"
@@ -64,8 +58,7 @@ module.exports = {
                 try {
                         api.setMessageReaction("⏳", event.messageID, () => {}, true);
                         
-                        const baseUrl = await baseApiUrl();                   
-                        const response = await axios.get(`${baseUrl}/api/ai`, {
+                        const response = await axios.get(`${await baseApiUrl()}/api/ai`, {
                                 params: {
                                         prompt: prompt,
                                         ai: "ai"
