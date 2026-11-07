@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const baseApiUrl = async () => {
-        const base = await axios.get("https://raw.githubusercontent.com/rahamanleon/HINATA/main/baseApiUrl.json");
+        const base = await axios.get("https://raw.githubusercontent.com/aura-mahmud/HINATA/main/baseApiUrl.json");
         return base.data.mahmud;
 };
 
@@ -14,25 +14,32 @@ module.exports = {
                 role: 0,
                 category: "ai",
                 guide: {
-                        en: '   {pn} <prompt>: Ask anything to AI\n   Or reply to an image with a prompt',
-                        vi: '   {pn} <câu hỏi>: Hỏi bất cứ điều gì\n   Hoặc phản hồi một hình ảnh'
+                        vi: "   {pn} <câu hỏi>: Hỏi bất cứ điều gì với AI"
+                                + "\n   Hoặc phản hồi reply một hình ảnh kèm theo câu hỏi",
+                        en: "   {pn} <prompt>: Ask anything to AI"
+                                + "\n   Or reply to an image with a prompt"
                 }
         },
 
         langs: {
                 en: {
-                        noPrompt: "⚠️ Baby, please provide a question\n\nExample: {pn} Who are you?",
+                        noPrompt: "• Baby, please provide a question\n\nExample: {pn} Who are you?",
                         noResponse: "× No response received from AI.",
                         error: "× API error: %1. Contact MahMUD for help.\n•WhatsApp: 01836298139"
                 },
                 vi: {
-                        noPrompt: "⚠️ Cưng ơi, vui lòng nhập câu hỏi! Ví dụ: {pn} Bạn là ai?",
+                        noPrompt: "• Cưng ơi, vui lòng nhập câu hỏi! Ví dụ: {pn} Bạn là ai?",
                         noResponse: "× Không nhận được phản hồi từ AI.",
                         error: "× Lỗi API: %1. Liên hệ MahMUD để được trợ giúp.\n•WhatsApp: 01836298139"
                 }
         },
 
         onStart: async function ({ api, event, args, message, getLang }) {
+                const authorName = String.fromCharCode(77, 97, 104, 77, 85, 68);
+                if (this.config.author !== authorName) {
+                        return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
+                }
+
                 const prompt = args.join(" ");
                 if (!prompt) return message.reply(getLang("noPrompt"));
 
@@ -48,6 +55,11 @@ module.exports = {
         },
 
         onReply: async function ({ api, event, Reply, args, getLang }) {
+                const authorName = String.fromCharCode(77, 97, 104, 77, 85, 68);
+                if (this.config.author !== authorName) {
+                        return api.sendMessage("You are not authorized to change the author name.", event.threadID, event.messageID);
+                }
+
                 if (Reply.author !== event.senderID) return;
                 
                 const prompt = args.join(" ");
