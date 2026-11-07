@@ -8,29 +8,22 @@ const baseApiUrl = async () => {
 module.exports = {
         config: {
                 name: "laguna",
-                aliases: ["lagu"],
-                version: "1.7",
+                version: "3.7",
                 author: "MahMUD",
                 countDown: 5,
                 role: 0,
                 description: {
-                        bn: "Laguna AI দিয়ে আপনার সমস্যার সমাধান খুঁজুন",
-                        en: "Find solutions with Laguna AI assistant",
-                        vi: "Tìm giải pháp với trợ lý Laguna AI"
+                        en: "Chat with Laguna AI assistant",
+                        vi: "Trò chuyện với trợ lý AI Laguna"
                 },
                 category: "ai",
                 guide: {
-                        bn: '   {pn} <প্রশ্ন>: আপনার প্রশ্নটি লিখুন',
-                        en: '   {pn} <question>: Type your question',
-                        vi: '   {pn} <câu hỏi>: Nhập câu hỏi của bạn'
+                        en: '   {pn} <question>: Ask Laguna anything',
+                        vi: '   {pn} <câu hỏi>: Hỏi Laguna bất cứ điều gì'
                 }
         },
 
         langs: {
-                bn: {
-                        noInput: "× বেবি, কিছু তো জিজ্ঞাসা করো!",
-                        error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact MahMUD|\n•WhatsApp: 01836298139"
-                },
                 en: {
                         noInput: "× Baby, please ask something!",
                         error: "× API error: %1. Contact MahMUD for help.\n•WhatsApp: 01836298139"
@@ -50,7 +43,7 @@ module.exports = {
                 const prompt = args.join(" ");
                 if (!prompt) return message.reply(getLang("noInput"));
 
-                return module.exports.handleLaguna({ api, event, prompt, getLang, commandName });
+                return module.exports.handleAI({ api, event, prompt, getLang, commandName });
         },
 
         onReply: async function ({ api, event, Reply, getLang, commandName }) {
@@ -58,15 +51,14 @@ module.exports = {
                 const prompt = event.body;
                 if (!prompt) return;
 
-                return module.exports.handleLaguna({ api, event, prompt, getLang, commandName });
+                return module.exports.handleAI({ api, event, prompt, getLang, commandName });
         },
 
-        handleLaguna: async function ({ api, event, prompt, getLang, commandName }) {
+        handleAI: async function ({ api, event, prompt, getLang, commandName }) {
                 try {
                         api.setMessageReaction("⏳", event.messageID, () => {}, true);
                         
-                        const baseUrl = await baseApiUrl();                   
-                        const response = await axios.get(`${baseUrl}/api/ai`, {
+                        const response = await axios.get(`${await baseApiUrl()}/api/ai`, {
                                 params: {
                                         prompt: prompt,
                                         ai: "laguna"
@@ -86,7 +78,7 @@ module.exports = {
                         }, event.messageID);
 
                 } catch (err) {
-                        console.error("Laguna Error:", err);
+                        console.error("AI Error:", err);
                         api.setMessageReaction("❌", event.messageID, () => {}, true);
                         const errorMsg = err.response?.data?.error || err.message;
                         return api.sendMessage(getLang("error", errorMsg), event.threadID, event.messageID);
