@@ -8,29 +8,22 @@ const baseApiUrl = async () => {
 module.exports = {
         config: {
                 name: "qwen",
-                aliases: ["qwen7b"],
-                version: "1.7",
+                version: "3.7",
                 author: "MahMUD",
-                countDown: 10,
+                countDown: 5,
                 role: 0,
                 description: {
-                        bn: "Qwen AI এর সাথে বুদ্ধিমত্তার সাথে চ্যাট করুন",
-                        en: "Chat intelligently with Qwen AI",
-                        vi: "Trò chuyện thông minh với Qwen AI"
+                        en: "Chat with Qwen AI assistant",
+                        vi: "Trò chuyện với trợ lý AI Qwen"
                 },
                 category: "ai",
                 guide: {
-                        bn: '   {pn} <প্রশ্ন>: আপনার প্রশ্নটি লিখুন',
-                        en: '   {pn} <question>: Type your question',
-                        vi: '   {pn} <câu hỏi>: Nhập câu hỏi của bạn'
+                        en: '   {pn} <question>: Ask Qwen anything',
+                        vi: '   {pn} <câu hỏi>: Hỏi Qwen bất cứ điều gì'
                 }
         },
 
         langs: {
-                bn: {
-                        noInput: "× বেবি, কিছু তো জিজ্ঞাসা করো!",
-                        error: "× সমস্যা হয়েছে: %1। প্রয়োজনে Contact MahMUD|\n•WhatsApp: 01836298139"
-                },
                 en: {
                         noInput: "× Baby, please ask something!",
                         error: "× API error: %1. Contact MahMUD for help.\n•WhatsApp: 01836298139"
@@ -50,7 +43,7 @@ module.exports = {
                 const prompt = args.join(" ");
                 if (!prompt) return message.reply(getLang("noInput"));
 
-                return module.exports.handleQwen({ api, event, prompt, getLang, commandName });
+                return module.exports.handleAI({ api, event, prompt, getLang, commandName });
         },
 
         onReply: async function ({ api, event, Reply, getLang, commandName }) {
@@ -58,15 +51,14 @@ module.exports = {
                 const prompt = event.body;
                 if (!prompt) return;
 
-                return module.exports.handleQwen({ api, event, prompt, getLang, commandName });
+                return module.exports.handleAI({ api, event, prompt, getLang, commandName });
         },
 
-        handleQwen: async function ({ api, event, prompt, getLang, commandName }) {
+        handleAI: async function ({ api, event, prompt, getLang, commandName }) {
                 try {
                         api.setMessageReaction("⏳", event.messageID, () => {}, true);
                         
-                        const baseUrl = await baseApiUrl();                   
-                        const response = await axios.get(`${baseUrl}/api/ai`, {
+                        const response = await axios.get(`${await baseApiUrl()}/api/ai`, {
                                 params: {
                                         prompt: prompt,
                                         ai: "qwen"
@@ -86,7 +78,7 @@ module.exports = {
                         }, event.messageID);
 
                 } catch (err) {
-                        console.error("Qwen Error:", err);
+                        console.error("AI Error:", err);
                         api.setMessageReaction("❌", event.messageID, () => {}, true);
                         const errorMsg = err.response?.data?.error || err.message;
                         return api.sendMessage(getLang("error", errorMsg), event.threadID, event.messageID);
